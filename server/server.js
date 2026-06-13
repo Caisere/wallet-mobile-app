@@ -1,10 +1,15 @@
 import express from "express";
 import dotenv from "dotenv";
 import { sql } from "./config/db.js";
+import transactionRoutes from "./routes/transactions-route.js";
 
 dotenv.config();
 
 const app = express();
+
+//middleware
+app.use(express.json());
+app.use("/api/transactions", transactionRoutes);
 
 const PORT = process.env.PORT;
 
