@@ -7,5 +7,5 @@ if (!DB_URL) {
   console.log("can't find the Database URL");
 }
 
-// create a sqp connection using DB connection
+// create a sql connection using DB URL
 export const sql = neon(DB_URL);
