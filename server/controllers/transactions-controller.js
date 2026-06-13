@@ -11,7 +11,7 @@ export async function getTransactionById(req, res) {
       ORDER BY created_at DESC
     `;
 
-    return res.status(201).json({
+    return res.status(200).json({
       message: "Success",
       data: transactions,
     });
@@ -59,7 +59,8 @@ export async function deleteTransactionById(req, res) {
   try {
     const { id } = req.params;
 
-    if (isNaN(parseInt(id))) {
+    const transactionId = Number(id);
+    if (!Number.isInteger(transactionId) || transactionId <= 0) {
       return res.status(400).json({
         message: "Invalid transaction ID",
       });
@@ -67,7 +68,7 @@ export async function deleteTransactionById(req, res) {
 
     const result = await sql`
       DELETE FROM transactions 
-      WHERE id = ${id} RETURNING *
+      WHERE id = ${transactionId} RETURNING *
     `;
 
     if (result.length === 0) {
