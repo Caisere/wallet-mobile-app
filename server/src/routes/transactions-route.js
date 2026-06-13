@@ -5,6 +5,7 @@ import {
   getTransactionById,
   getTransactionSummaryByUserId,
 } from "../controllers/transactions-controller.js";
+import rateLimiter from "../middleware/rate-limiter.js";
 
 const router = express.Router();
 
