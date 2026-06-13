@@ -41,8 +41,6 @@ export async function createTransaction(req, res) {
         RETURNING *
       `;
 
-    console.log(transaction.at(0));
-
     return res.status(201).json({
       message: "transaction created successfully",
       data: transaction.at(0),
@@ -92,24 +90,38 @@ export async function getTransactionSummaryByUserId(req, res) {
   try {
     const { userId } = req.params;
 
-    const balanceResult = await sql`
-      SELECT COALESCE(SUM(amount), 0) as balance FROM transactions WHERE user_id = ${userId}
-    `;
+    // const [balanceResult, incomeResult, expenseResult] = await Promise.all([
+    //   sql`
+    //   SELECT COALESCE(SUM(amount), 0) as balance FROM transactions WHERE user_id = ${userId}
+    // `,
+    //   sql`
+    //   SELECT COALESCE(SUM(amount), 0) as income FROM transactions WHERE user_id = ${userId} AND amount > 0
+    // `,
+    //   sql`
+    //   SELECT COALESCE(SUM(amount), 0) as expenses FROM transactions WHERE user_id = ${userId} AND amount < 0
+    // `,
+    // ]);
 
-    const incomeResult = await sql`
-      SELECT COALESCE(SUM(amount), 0) as income FROM transactions WHERE user_id = ${userId} AND amount > 0
-    `;
+    const result = await sql`
+      SELECT 
+        COALESCE(SUM(amount), 0) AS balance,
+        COALESCE(SUM(CASE WHEN amount > 0 THEN amount ELSE 0 END), 0) AS income,
+        COALESCE(SUM(CASE WHEN amount < 0 THEN amount ELSE 0 END), 0) AS expenses 
+      FROM transactions 
+      WHERE user_id = ${userId}`;
 
-    const expenseResult = await sql`
-      SELECT COALESCE(SUM(amount), 0) as expenses FROM transactions WHERE user_id = ${userId} AND amount < 0
-    `;
+    if (!result || result.length === 0) {
+      return res.status(500).json({
+        message: "Internal server error",
+      });
+    }
 
     return res.status(200).json({
       message: "Success",
       data: {
-        balance: balanceResult.at(0).balance,
-        income: incomeResult.at(0).income,
-        expense: expenseResult.at(0).expenses,
+        balance: result.at(0).balance,
+        income: result.at(0).income,
+        expense: result.at(0).expenses,
       },
     });
   } catch (error) {
