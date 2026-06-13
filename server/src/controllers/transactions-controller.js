@@ -110,6 +110,12 @@ export async function getTransactionSummaryByUserId(req, res) {
       FROM transactions 
       WHERE user_id = ${userId}`;
 
+    if (!result || result.length === 0) {
+      return res.status(500).json({
+        message: "Internal server error",
+      });
+    }
+
     return res.status(200).json({
       message: "Success",
       data: {

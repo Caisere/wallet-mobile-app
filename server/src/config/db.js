@@ -5,6 +5,7 @@ const DB_URL = process.env.DATABASE_URL;
 
 if (!DB_URL) {
   console.log("can't find the Database URL");
+  process.exit(1);
 }
 
 // create a sql connection using DB URL
