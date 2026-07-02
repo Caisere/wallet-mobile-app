@@ -9,8 +9,9 @@ export const styles = StyleSheet.create({
     justifyContent: "center",
   },
   illustration: {
-    height: 310,
-    width: 300,
+    width: 400,
+    height: 400,
+    alignSelf: "center",
     resizeMode: "contain",
   },
   title: {
@@ -60,6 +61,7 @@ export const styles = StyleSheet.create({
     color: COLORS.primary,
     fontSize: 16,
     fontWeight: "600",
+    textDecorationLine: "underline",
   },
   verificationContainer: {
     flex: 1,

@@ -15,12 +15,6 @@ export default function RootLayout() {
     <ClerkProvider publishableKey={publishableKey} tokenCache={tokenCache}>
       <SafeScreen>
         <Slot />
-        {/* <Stack
-        screenOptions={{
-          headerShown: false,
-          animation: "fade",
-        }}
-        /> */}
       </SafeScreen>
     </ClerkProvider>
   );
