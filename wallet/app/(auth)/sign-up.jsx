@@ -13,6 +13,7 @@ import {
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { COLORS } from "../../constants/colors";
 import { styles as style } from "../../assets/styles/auth.styles";
+import { finalizeAndNavigate } from "../../lib/helper";
 
 export default function Page() {
   const { signUp, errors, fetchStatus } = useSignUp();
@@ -47,24 +48,7 @@ export default function Page() {
     });
 
     if (signUp.status === "complete") {
-      await signUp.finalize({
-        // Redirect the user to the home page after signing up
-        navigate: ({ session, decorateUrl }) => {
-          if (session?.currentTask) {
-            // Handle pending session tasks
-            // See https://clerk.com/docs/guides/development/custom-flows/authentication/session-tasks
-            console.log(session?.currentTask);
-            return;
-          }
-
-          const url = decorateUrl("/");
-          if (url.startsWith("http")) {
-            window.location.href = url;
-          } else {
-            router.push(url);
-          }
-        },
-      });
+      await finalizeAndNavigate(signUp, router);
     } else {
       // Check why the sign-up is not complete
       console.error("Sign-up attempt not complete:", signUp);
@@ -240,7 +224,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     textAlign: "center",
     fontSize: 36,
-    fontWeight: "semi-bold",
+    fontWeight: 600,
   },
   label: {
     fontWeight: "600",

@@ -12,6 +12,7 @@ import {
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { styles as style } from "../../assets/styles/auth.styles";
 import { COLORS } from "../../constants/colors";
+import { finalizeAndNavigate } from "../../lib/helper";
 // import {} from "@expo/vector-icons"
 
 export default function Page() {
@@ -35,23 +36,7 @@ export default function Page() {
     }
 
     if (signIn.status === "complete") {
-      await signIn.finalize({
-        navigate: ({ session, decorateUrl }) => {
-          if (session?.currentTask) {
-            // Handle pending session tasks
-            // See https://clerk.com/docs/guides/development/custom-flows/authentication/session-tasks
-            console.log(session?.currentTask);
-            return;
-          }
-
-          const url = decorateUrl("/");
-          if (url.startsWith("http")) {
-            window.location.href = url;
-          } else {
-            router.push(url);
-          }
-        },
-      });
+      await finalizeAndNavigate(signIn, router);
     } else if (signIn.status === "needs_second_factor") {
       // See https://clerk.com/docs/guides/development/custom-flows/authentication/multi-factor-authentication
     } else if (signIn.status === "needs_client_trust") {
@@ -74,23 +59,7 @@ export default function Page() {
     await signIn.mfa.verifyEmailCode({ code });
 
     if (signIn.status === "complete") {
-      await signIn.finalize({
-        navigate: ({ session, decorateUrl }) => {
-          if (session?.currentTask) {
-            // Handle pending session tasks
-            // See https://clerk.com/docs/guides/development/custom-flows/authentication/session-tasks
-            console.log(session?.currentTask);
-            return;
-          }
-
-          const url = decorateUrl("/");
-          if (url.startsWith("http")) {
-            window.location.href = url;
-          } else {
-            router.push(url);
-          }
-        },
-      });
+      await finalizeAndNavigate(signIn, router);
     } else {
       // Check why the sign-in is not complete
       console.error("Sign-in attempt not complete:", signIn);
@@ -99,7 +68,6 @@ export default function Page() {
 
   if (signIn.status === "needs_client_trust") {
     return (
-      
       <View style={styles.container}>
         <Text
           type="title"
